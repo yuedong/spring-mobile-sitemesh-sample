@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="com.benkeit.sample.controller"/>
+
+    <mvc:annotation-driven>
+        <mvc:argument-resolvers>
+            <bean class="org.springframework.mobile.device.DeviceWebArgumentResolver"/>
+            <bean class="org.springframework.mobile.device.site.SitePreferenceWebArgumentResolver"/>
+        </mvc:argument-resolvers>
+    </mvc:annotation-driven>
+
+    <mvc:interceptors>
+        <!-- On pre-handle, resolve the device that originated the web request -->
+        <bean class="org.springframework.mobile.device.DeviceResolverHandlerInterceptor"/>
+
+        <!-- On pre-handle, manage the user's site preference (declare after DeviceResolverHandlerInterceptor) -->
+        <bean class="org.springframework.mobile.device.site.SitePreferenceHandlerInterceptor"/>
+    </mvc:interceptors>
+
+    <bean class="org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver">
+        <constructor-arg>
+            <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                <property name="prefix" value="/WEB-INF/views/"/>
+                <property name="suffix" value=".jsp"/>
+            </bean>
+        </constructor-arg>
+        <property name="mobilePrefix" value="mobile/"/>
+
+        <!-- Tablet will be fallback to normal -->
+        <!--<property name="tabletPrefix" value="tablet/"/>-->
+        <property name="enableFallback" value="true"/>
+    </bean>
+
+</beans>
